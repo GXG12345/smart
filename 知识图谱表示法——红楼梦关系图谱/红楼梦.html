@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html style="height: 100%" lang="zh-CN">
+    <head>
+        <title>人工智能第二次作业——知识图谱</title>
+        <meta charset="utf-8">
+        <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    </head>
+    <body style="height: 100%; margin: 0">
+        <div id="container" style="height: 100%"></div>
+        <script type="text/javascript">
+        $.ajaxSetup({ async: false });//异步
+        var myChart = echarts.init(document.getElementById("container"));
+                var app = {};
+                var option;
+                myChart.showLoading();
+                var rela = { "data": [], "links": [] };
+                $.getJSON('./honglou.json', function (json) {/*由于浏览器无法跨域访问本地的json文件，因此我采用了VS code的Live Server插件来模仿服务器请求*/
+                        rela = json;
+
+                        });
+                myChart.hideLoading();
+                option = {
+                        // backgroundColor: "white",
+                        title: {
+                            text: '红楼梦人物关系图谱',
+                             textStyle: {
+                                // color: "white",
+                                fontWeight: "lighter",
+                                }
+                        },
+                animationDurationUpdate: 1500,
+                animationEasingUpdate: 'quinticInOut',
+                legend: {
+                        x: "center",
+                        show: true,
+                        data: ["贾家荣国府", "贾家宁国府", "王家", "史家", "薛家", "其他", "林家"]
+                            },
+                        series: [
+                                {
+                                    type: 'graph',
+                                    layout: 'circular',
+                                    symbolSize: 45,
+                                    edgeSymbol: ['circle', 'arrow'],
+                                    edgeSymbolSize: [4, 4],
+                                    edgeLabel: {
+                                        normal: {
+                                            show: true,
+                                            textStyle: {
+                                                fontSize: 10
+                                            },
+                                            formatter: "{c}"
+                                        }
+                                    },
+                                    force: {
+                                        repulsion: 2500,
+                                        edgeLength: [10, 100]
+                                    },
+                                    focusNodeAdjacency: true,
+                                    draggable: true,
+                                    roam: true,
+                                    categories: [{
+                                        name: '贾家荣国府',
+                                        // itemStyle: {
+                                        //     normal: {
+                                        //         color: "#009800",
+                                        //     }
+                                        // }
+                                    }, {
+                                        name: '贾家宁国府',
+                                        // itemStyle: {
+                                        //     normal: {
+                                        //         color: "#4592FF",
+                                        //     }
+                                        // }
+                                    }, {
+                                        name: '王家',
+                                        // itemStyle: {
+                                        //     normal: {
+                                        //         color: "#3592F",
+                                        //     }
+                                        // }
+                                    },
+                                    {
+                                        name: '史家',
+                                    }, {
+                                        name: '薛家',
+                                    }, {
+                                        name: '其他',
+                                    },
+                                    {
+                                        name: '林家',
+                                    }
+                                    ],
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            textStyle: {
+                                                fontSize: 12
+                                            },
+                                        }
+                                    },
+                                    force: {
+                                        repulsion: 1000
+                                    },
+                                    tooltip: {
+                                        formatter: function (node) { // 区分连线和节点，节点上额外显示其他数字
+                                            if (!node.value) {
+                                                return node.data.name;
+                                            } else {
+                                                return node.data.name + ":" + node.data.showNum;
+                                            }
+                                        },
+                                    },
+                                    lineStyle: {
+                                        normal: {
+                                            opacity: 0.9,
+                                            width: 1,
+                                            curveness: 0.3
+                                        }
+                                    },
+                                    // progressiveThreshold: 700,
+                                    nodes: rela.data.map(function (node, idx) {
+                                        node.id = idx;
+                                        return node;
+                                    }),
+                                    links: rela.links,
+
+
+
+                                }
+                            ]
+                        };
+                        myChart.setOption(option, true);
+
+if (option && typeof option === 'object') {
+    myChart.setOption(option);
+}
+
+        </script>
+    </body>
+    </html>
